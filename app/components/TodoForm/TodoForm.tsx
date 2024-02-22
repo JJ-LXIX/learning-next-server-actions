@@ -36,8 +36,16 @@ const formSchema = z.object({
 export default function TodoForm({ result }: Props) {
   const [optimisticTodos, setOptimisticTodo] = useOptimistic(
     result,
-    (state, newTodo: Todo) => {
-      return [...state, newTodo];
+    (
+      state,
+      { action, newTodo }: { action?: string; newTodo: Todo }
+    ): Todo[] => {
+      switch (action) {
+        case "delete":
+          return state.filter((todo) => todo.id !== newTodo.id);
+        default:
+          return [...state, newTodo];
+      }
     }
   );
 
@@ -53,11 +61,10 @@ export default function TodoForm({ result }: Props) {
     e: BaseSyntheticEvent<object, any, any> | undefined
   ) {
     e?.preventDefault();
-    console.log(data, e);
     form.reset();
     startTransition(() => {
       setOptimisticTodo({
-        todo: data.todo as string,
+        newTodo: { todo: data.todo as string },
       });
     });
 
@@ -94,7 +101,10 @@ export default function TodoForm({ result }: Props) {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
-      <TodoList optimisticTodos={optimisticTodos} />
+      <TodoList
+        optimisticTodos={optimisticTodos}
+        setOptimisticTodo={setOptimisticTodo}
+      />
     </>
   );
 }
