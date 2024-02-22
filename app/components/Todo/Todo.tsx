@@ -4,7 +4,7 @@ import React from "react";
 
 type Props = {
   todo: {
-    id: number;
+    id?: number;
     todo: string | null;
   };
 };
@@ -17,7 +17,7 @@ export default function Todo({ todo }: Props) {
     >
       {todo.todo}
       <button
-        onClick={() => removeTodo(todo.id)}
+        onClick={() => removeTodo(todo.id!)}
         className="bg-red-800 w-10 h-10 absolute right-3 bottom-3 rounded-md"
       >
         X
